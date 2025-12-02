@@ -1,0 +1,65 @@
+use std::env;
+use anyhow::{Result, anyhow};
+use reqwest::header;
+
+mod solution;
+mod year2025;
+
+use solution::Solution;
+
+fn fetch_input(year: u32, day: u32, session_cookie: &str) -> Result<String> {
+    let url = format!("https://adventofcode.com/{}/day/{}/input", year, day);
+    let cookie_value = format!("session={}", session_cookie);
+
+    let mut headers = header::HeaderMap::new();
+    headers.insert(
+        header::COOKIE,
+        header::HeaderValue::from_str(&cookie_value)?
+    );
+
+    let client = reqwest::blocking::Client::builder()
+        .default_headers(headers)
+        .build()?;
+
+    let res = client.get(url).send()?;
+    let text = res.text()?;
+
+    Ok(text)
+}
+
+fn main() -> Result<()>{
+    dotenvy::dotenv().ok();
+
+    let args: Vec<String> = env::args().collect();
+
+    if args.len() < 3 {
+        return Err(anyhow!(
+            "Usage: {} <year> <day>\nExample: {} 2025 1",
+            args.get(0).map(|s| s.as_str()).unwrap_or("advent_of_code"),
+            args.get(0).map(|s| s.as_str()).unwrap_or("advent_of_code")
+        ));
+    }
+
+    let year: u32 = args[1].parse::<u32>()
+        .map_err(|_| anyhow!("Invalid year: '{}'. Year must be a number.", args[1]))?;
+
+    let day: u32 = args[2].parse::<u32>()
+        .map_err(|_| anyhow!("Invalid day: '{}'. Day must be a number.", args[2]))?;
+
+    let session_cookie = env::var("AOC_SESSION")
+        .map_err(|_| anyhow!("AOC_SESSION environment variable not set"))?;
+
+    let input = fetch_input(year, day, &session_cookie)?;
+
+    match year {
+        2025 => {
+            match day {
+                1 => year2025::day01::Day01.run(&input)?,
+                _ => return Err(anyhow!("Day {} not implemented for year 2025", day))
+            }
+        }
+        _ => return Err(anyhow!("Year {} not implemented", year))
+    }
+
+    Ok(())
+}
