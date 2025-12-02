@@ -40,11 +40,10 @@ impl Solution for Day01 {
             let full_rotations: i32 = num_turns / 100;
 
             zero_count += full_rotations as u32;
-            let num_turns = num_turns % 100;
+            num_turns = num_turns % 100;
 
             match first_char.to_ascii_uppercase() {
                 'R' => {
-                    if position == 0 && num_turns == 0 { continue; }
                     if (position + num_turns) >= 100 {
                         zero_count += 1;
                     }

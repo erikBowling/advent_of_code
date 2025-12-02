@@ -50,7 +50,6 @@ fn main() -> Result<()>{
         .map_err(|_| anyhow!("AOC_SESSION environment variable not set"))?;
 
     let input = fetch_input(year, day, &session_cookie)?;
-
     match year {
         2025 => {
             match day {
