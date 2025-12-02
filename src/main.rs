@@ -5,8 +5,6 @@ use reqwest::header;
 mod solution;
 mod year2025;
 
-use solution::Solution;
-
 fn fetch_input(year: u32, day: u32, session_cookie: &str) -> Result<String> {
     let url = format!("https://adventofcode.com/{}/day/{}/input", year, day);
     let cookie_value = format!("session={}", session_cookie);
@@ -50,15 +48,14 @@ fn main() -> Result<()>{
         .map_err(|_| anyhow!("AOC_SESSION environment variable not set"))?;
 
     let input = fetch_input(year, day, &session_cookie)?;
-    match year {
-        2025 => {
-            match day {
-                1 => year2025::day01::Day01.run(&input)?,
-                _ => return Err(anyhow!("Day {} not implemented for year 2025", day))
-            }
-        }
+    let solutions = match year {
+        2025 => year2025::get_solutions(),
         _ => return Err(anyhow!("Year {} not implemented", year))
-    }
+    };
+
+    let solution = solutions.get(&day)
+        .ok_or_else(|| anyhow!("Day {} not implemented for year {}", day, year))?;
+    solution.run(&input)?;
 
     Ok(())
 }
