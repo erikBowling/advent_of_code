@@ -33,17 +33,10 @@ fn main() -> Result<()>{
 
     if args.len() < 3 {
         return Err(anyhow!(
-            "Usage: {} <year> <day> [OPTIONS]\n\n\
-            Options:\n  \
-              --test \"input\"  Use inline test input\n  \
-              --stdin          Read test input from stdin\n\n\
-            Examples:\n  \
-              {} 2025 1\n  \
-              {} 2025 1 --test \"1 2 3\"\n  \
-              echo \"test\" | {} 2025 1 --stdin",
-            args.get(0).map(|s| s.as_str()).unwrap_or("advent_of_code"),
-            args.get(0).map(|s| s.as_str()).unwrap_or("advent_of_code"),
-            args.get(0).map(|s| s.as_str()).unwrap_or("advent_of_code"),
+            "Usage: {} <year> <day> [OPTIONS]\n
+            Options:\n
+            --test \"input\"  Use inline test input
+            --stdin          Read test input from stdin\n",
             args.get(0).map(|s| s.as_str()).unwrap_or("advent_of_code")
         ));
     }

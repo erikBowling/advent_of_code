@@ -1,5 +1,3 @@
-use std::collections::HashMap;
-
 use crate::solution::Solution;
 use anyhow::Result;
 
