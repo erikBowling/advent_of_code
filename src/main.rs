@@ -1,9 +1,11 @@
+use anyhow::{anyhow, Result};
+use reqwest::header;
 use std::env;
 use std::io::{self, Read};
-use anyhow::{Result, anyhow};
-use reqwest::header;
 
+mod constants;
 mod solution;
+mod year2024;
 mod year2025;
 
 fn fetch_input(year: u32, day: u32, session_cookie: &str) -> Result<String> {
@@ -13,7 +15,7 @@ fn fetch_input(year: u32, day: u32, session_cookie: &str) -> Result<String> {
     let mut headers = header::HeaderMap::new();
     headers.insert(
         header::COOKIE,
-        header::HeaderValue::from_str(&cookie_value)?
+        header::HeaderValue::from_str(&cookie_value)?,
     );
 
     let client = reqwest::blocking::Client::builder()
@@ -26,7 +28,7 @@ fn fetch_input(year: u32, day: u32, session_cookie: &str) -> Result<String> {
     Ok(text)
 }
 
-fn main() -> Result<()>{
+fn main() -> Result<()> {
     dotenvy::dotenv().ok();
 
     let args: Vec<String> = env::args().collect();
@@ -41,10 +43,12 @@ fn main() -> Result<()>{
         ));
     }
 
-    let year: u32 = args[1].parse::<u32>()
+    let year: u32 = args[1]
+        .parse::<u32>()
         .map_err(|_| anyhow!("Invalid year: '{}'. Year must be a number.", args[1]))?;
 
-    let day: u32 = args[2].parse::<u32>()
+    let day: u32 = args[2]
+        .parse::<u32>()
         .map_err(|_| anyhow!("Invalid day: '{}'. Day must be a number.", args[2]))?;
 
     let input = if args.len() > 3 {
@@ -73,10 +77,12 @@ fn main() -> Result<()>{
 
     let solutions = match year {
         2025 => year2025::get_solutions(),
-        _ => return Err(anyhow!("Year {} not implemented", year))
+        2024 => year2024::get_solutions(),
+        _ => return Err(anyhow!("Year {} not implemented", year)),
     };
 
-    let solution = solutions.get(&day)
+    let solution = solutions
+        .get(&day)
         .ok_or_else(|| anyhow!("Day {} not implemented for year {}", day, year))?;
     solution.run(&input)?;
 
